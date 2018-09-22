@@ -4,7 +4,7 @@ Trabalho desenvolvido para cadeira Redes de Computadores I, na UNISINOS em 2018/
 
 
 ##### Como rodar?
-- Certifique-se de que possui o node instalado na maquina;
+- Certifique-se de que possui o node instalado na maquina
 - Em um terminal, execute `npm i` dentro da pasta `api` e depois execute `node index.js`
 - Em outro terminal, execute `npm i` dentro da pasta `static` e depois execute `npm run start`
 - Pronto, o projeto estará rodando no seu `localhost:8080`
