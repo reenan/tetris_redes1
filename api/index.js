@@ -3,7 +3,6 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const uuidv4 = require('uuid/v4')
 
 const app = express()
 const http = require('http').Server(app)
@@ -23,6 +22,10 @@ let queue = []
 // Lista de jogos
 let games = []
 
+http.listen(8080, async () => {
+    console.log('tetris running at localhost:8080')
+})
+
 app.get('/game', ({ res }) => {
     res.redirect('/')
 })
@@ -32,17 +35,19 @@ io.on('connection', (socket) => {
     // Quando um cliente solicita entrada na fila
     socket.on('enterQueue', (nick) => {
         socket.nick = nick || 'anônimo'
-        socket.id = uuidv4()
-        queue.push(socket)
 
-        checkQueue()
+        if (queue.indexOf(socket) == -1) {
+            console.log('adicionando ', socket.id, ' na fila')
+            queue.push(socket)
+            checkQueue()
+        }
     })
-    
     
     // Quando um cliente desconectar
     socket.on('disconnect', () => {
         
         // Remove cliente da fila, se estiver la
+        console.log('removendo ', socket.id, ' da fila')
         queue = queue.filter(client => client.id != socket.id)
 
         // Se estiver jogando, finaliza o jogo
@@ -55,10 +60,6 @@ io.on('connection', (socket) => {
             checkQueue()
         }
     })
-})
-
-http.listen(8080, async () => {
-    console.log('tetris running at localhost:8080')
 })
 
 // Checa a fila para verificar se existe algum jogo a ser iniciado

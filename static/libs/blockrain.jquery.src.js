@@ -14,7 +14,7 @@ import "./blockrain.jquery.themes.js";
       autoplayRestart: true, // Restart the game automatically once a bot loses
       showFieldOnStart: true, // Show a bunch of random blocks on the start screen (it looks nice)
 
-      useEnemyData: false,
+      initPaused: false,
 
       theme: null, // The theme name or a theme object
       blockWidth: 10, // How many blocks wide the field is (The standard is 10 blocks)
@@ -47,7 +47,7 @@ import "./blockrain.jquery.themes.js";
      * Start/Restart Game
      */
     start: function() {
-      if (!this.options.useEnemyData) {
+      if (!this.options.initPaused) {
         this._doStart();
         this.options.onStart.call(this.element);
       } else {
@@ -72,7 +72,6 @@ import "./blockrain.jquery.themes.js";
     },
 
     gameover: function() {
-      console.log('gameoverrr')
       this.showGameOverMessage();
       this._board.gameover = true;
       this.options.onGameOver.call(this.element, this._filled.score);
@@ -96,7 +95,6 @@ import "./blockrain.jquery.themes.js";
     },
 
     pause: function() {
-      console.log('pause')
       this._board.paused = true;
     },
 
@@ -253,8 +251,8 @@ import "./blockrain.jquery.themes.js";
 
     },
 
-    updateTetris: function(enemyData) {
-      this._filled.data = enemyData;
+    updateTetris: function(adversaryData) {
+      this._filled.data = adversaryData;
       this._filled.draw();
       this._board.render(true);
     },
@@ -286,7 +284,7 @@ import "./blockrain.jquery.themes.js";
       this._board.init();
 
 
-      if (this.options.useEnemyData) {
+      if (this.options.initPaused) {
         this._filled.data = new Array(game._BLOCK_WIDTH * game._BLOCK_HEIGHT);
         this._filled.draw();
         this._board.render(true);
@@ -295,7 +293,7 @@ import "./blockrain.jquery.themes.js";
       this._SetupFilled();
       */
 
-      if (this.options.useEnemyData) {
+      if (this.options.initPaused) {
         this._board.render(true);
       }
 
@@ -1493,7 +1491,7 @@ import "./blockrain.jquery.themes.js";
      */
     _setupControls: function(enable) {
 
-      if (this.options.useEnemyData)
+      if (this.options.initPaused)
         return;
 
       var game = this;

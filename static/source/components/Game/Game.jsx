@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { findDOMNode } from 'react-dom';
 
 
@@ -6,24 +6,75 @@ import './Game.scss'
 import BlockRain from '../../../libs/blockrain.jquery.src.js';
 import '../../../libs/blockrain.css';
 
-export default class Game extends Component {
+export default class Game extends PureComponent {
 	static defaultProps = {
-		enemyData: []
-	};
-
+		adversary: {
+			filled: {
+				version: 0,
+				data: [],
+				lines: 0
+			},
+			score: 0
+		},
+		gameId: null,
+		isOver: false,
+		isWinner: false
+	}
+	
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			adversaryScore: 0
+			message: ''
 		}
 	}
 
 	componentDidMount() {
+		this.tetrify()
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { adversary: nextAdversary, isOver: nextIsOver, isWinner: nextIsWinner } = nextProps
+		const { adversary } = this.props
+
+		// Atualiza tetris do adversário com o blocos 
+		if (nextAdversary.filled.version > adversary.filled.version) {
+			BlockRain(this.tetrisAdversary).tetrify(
+				'updateTetris',
+				nextAdversary.filled.data
+			)
+		}
+
+		// Insere uma linha fixa para cada linha fechada do adversário
+		if (nextAdversary.filled.lines > adversary.filled.lines) {
+			BlockRain(this.tetris).tetrify(
+				'addConcreteLine', 
+				nextAdversary.filled.lines - adversary.filled.lines
+			)
+		}
+
+		// Finaliza o jogo
+		if (nextIsOver) {
+			BlockRain(this.tetris).tetrify('pause');
+			BlockRain(this.tetrisAdversary).tetrify('pause');
+	
+			if (nextIsWinner) {
+				this.setState({
+					message: "VOCÊ GANHOU!"
+				})
+			} else {
+				this.setState({
+					message: "VOCÊ PERDEU!"
+				})
+			}
+		}
+	}
+
+	tetrify = () => {
 		this.tetris = BlockRain(findDOMNode(this.refs.tetris)).find('.tetris')
 		this.tetris.tetrify({
 			autoplay: true,
-			speed: 200,
+			speed: 500,
 			
 			autoBlockWidth: true,
 			autoBlockSize: 20,
@@ -33,36 +84,12 @@ export default class Game extends Component {
 			onPlaced: this.onPlaced
 		})
 
-		this.tetrisEnemy = BlockRain(findDOMNode(this.refs.tetrisEnemy)).find('.tetris-enemy')
-		this.tetrisEnemy.tetrify({
+		this.tetrisAdversary = BlockRain(findDOMNode(this.refs.tetrisAdversary)).find('.tetris-adversary')
+		this.tetrisAdversary.tetrify({
 			autoBlockWidth: true,
 			autoBlockSize: 20,
 			theme: 'candy',
-
-			useEnemyData: true
-		})
-
-		socket.on('adversaryBlockPlaced', (filledData) => {
-			BlockRain(this.tetrisEnemy).tetrify('updateTetris', filledData)
-		})
-
-		socket.on('adversaryLine', (adversaryScore) => {
-			this.setState({
-				adversaryScore: adversaryScore
-			})
-
-			BlockRain(this.tetris).tetrify('addConcreteLine', 2);
-		})
-
-		socket.on('gameOver', (data) => {
-			BlockRain(this.tetris).tetrify('pause');
-			BlockRain(this.tetrisEnemy).tetrify('pause');
-
-			if (data.victory) {
-				alert("ganhador!")
-			} else {
-				alert("perdedor!")
-			}
+			initPaused: true
 		})
 	}
 
@@ -74,44 +101,21 @@ export default class Game extends Component {
 		socket.emit('blockPlaced', filledData)
 	}
 
-	onLine = (_lines, _scoreIncrement, score) => {
-		socket.emit('line', score)
+	onLine = (lines, _scoreIncrement, score) => {
+		socket.emit('line', {score: score, lines: lines})
 	}
 
-	// componentWillReceiveProps(nextProps) {
-	// 	if (nextProps.enemyDataCounter > this.props.enemyDataCounter) {
-	// 		BlockRain(this.tetrisEnemy).tetrify('updateTetris', nextProps.enemyData);
-	// 	}
-
-	// 	if (nextProps.trollMyself > this.props.trollMyself) {
-	// 		const diff = nextProps.trollMyself - this.props.trollMyself;
-	// 		BlockRain(this.tetris).tetrify('trollMyself', diff);
-	// 	}
-
-	// 	if (nextProps.saveNoob > this.props.saveNoob) {
-	// 		BlockRain(this.tetris).tetrify('saveNoob');
-	// 	}
-	// }
-
-	
-
-	// onMakeLines = (lines) => {
-	// 	this.props.socket.emit('onMakeLines', lines);
-	// }
-
-	// gameOver = () => {
-	// 	if (!this.unmounting) {
-	// 		this.props.socket.emit('gameOver');
-	// 	}
-	// }
+	leaveGame = () => {
+		socket.emit('leaveGame')
+		this.props.history.push('/')
+	}
 
 	render() {
-		//console.log('this.props: ', this.props);
-		
-		// não esquecer de usar dangerous HTML
-		//console.log('jQuery: ', jQuery);
+		const { message } = this.state
+		const { adversary, gameId } = this.props
+
 		return (
-			<div className='game-wrapper'>
+			<div key={gameId} className='game-wrapper'>
 				<div className='tetris-wrapper'>
 					<div ref='tetris'>
 						<div className='tetris' />
@@ -119,16 +123,18 @@ export default class Game extends Component {
 				</div>
 
 				<div className='tetris-wrapper adversary'>
-					<div ref='tetrisEnemy'>
+					<div ref='tetrisAdversary'>
 						<div className='blockrain-score-holder'>
 							<div className='blockrain-score'>
 								<div className='blockrain-score-msg'>Score</div>
-								<div className='blockrain-score-num'>{this.state.adversaryScore}</div>
+								<div className='blockrain-score-num'>{adversary.score}</div>
 							</div>
 						</div>
-						<div className='tetris-enemy' />
+						<div className='tetris-adversary' />
 					</div>
 				</div>
+
+				<p onClick={this.leaveGame} className='message'>{message}</p>
 			</div>
 		);
 	}
