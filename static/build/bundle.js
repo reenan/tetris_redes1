@@ -46631,6 +46631,8 @@ var App = function (_Component) {
 			var game = _this.removeReference(originalGame);
 
 			game.gameId = data.gameId;
+			game.adversary.nick = data.adversaryNick;
+			game.nick = data.nick;
 
 			_this.setState({ game: game });
 			history.push('/game');
@@ -46647,7 +46649,8 @@ var App = function (_Component) {
 						data: [],
 						lines: 0
 					},
-					score: 0
+					score: 0,
+					nick: ''
 				},
 				gameId: null,
 				isOver: false,
@@ -46704,11 +46707,13 @@ var App = function (_Component) {
 						data: [],
 						lines: 0
 					},
-					score: 0
+					score: 0,
+					nick: ''
 				},
 				gameId: null,
 				isOver: false,
-				isWinner: false
+				isWinner: false,
+				nick: ''
 			}
 		};
 		return _this;
@@ -46731,9 +46736,7 @@ var App = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _state = this.state,
-			    queue = _state.queue,
-			    game = _state.game;
+			var game = this.state.game;
 
 
 			return _react2.default.createElement(
@@ -46746,7 +46749,7 @@ var App = function (_Component) {
 							return _react2.default.createElement(_Game2.default, _extends({}, game, props));
 						} }),
 					_react2.default.createElement(_reactRouterDom.Route, { path: '/', render: function render(props) {
-							return _react2.default.createElement(_Queue2.default, _extends({}, props, queue));
+							return _react2.default.createElement(_Queue2.default, _extends({}, props, { nick: game.nick }));
 						} })
 				)
 			);
@@ -47243,16 +47246,6 @@ var Game = function (_PureComponent) {
 			if (nextIsOver) {
 				(0, _blockrainJquerySrc2.default)(this.tetris).tetrify('pause');
 				(0, _blockrainJquerySrc2.default)(this.tetrisAdversary).tetrify('pause');
-
-				if (nextIsWinner) {
-					this.setState({
-						message: "VOCÊ GANHOU!"
-					});
-				} else {
-					this.setState({
-						message: "VOCÊ PERDEU!"
-					});
-				}
 			}
 		}
 	}, {
@@ -47261,7 +47254,10 @@ var Game = function (_PureComponent) {
 			var message = this.state.message;
 			var _props = this.props,
 			    adversary = _props.adversary,
-			    gameId = _props.gameId;
+			    gameId = _props.gameId,
+			    isOver = _props.isOver,
+			    isWinner = _props.isWinner,
+			    nick = _props.nick;
 
 
 			return _react2.default.createElement(
@@ -47271,17 +47267,36 @@ var Game = function (_PureComponent) {
 					'div',
 					{ className: 'tetris-wrapper' },
 					_react2.default.createElement(
+						'p',
+						{ className: 'nick' },
+						nick
+					),
+					_react2.default.createElement(
 						'div',
-						{ ref: 'tetris' },
-						_react2.default.createElement('div', { className: 'tetris' })
+						{ className: 'tetrify-wrapper', ref: 'tetris' },
+						_react2.default.createElement('div', { className: 'tetris' }),
+						isOver ? _react2.default.createElement(
+							'div',
+							{ onClick: this.leaveGame, className: 'end-game' },
+							_react2.default.createElement(
+								'p',
+								null,
+								isWinner ? 'Parabéns, você ganhou' : 'Você perdeu'
+							)
+						) : null
 					)
 				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'tetris-wrapper adversary' },
 					_react2.default.createElement(
+						'p',
+						{ className: 'nick adversary' },
+						adversary.nick
+					),
+					_react2.default.createElement(
 						'div',
-						{ ref: 'tetrisAdversary' },
+						{ className: 'tetrify-wrapper', ref: 'tetrisAdversary' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'blockrain-score-holder' },
@@ -47302,11 +47317,6 @@ var Game = function (_PureComponent) {
 						),
 						_react2.default.createElement('div', { className: 'tetris-adversary' })
 					)
-				),
-				_react2.default.createElement(
-					'p',
-					{ onClick: this.leaveGame, className: 'message' },
-					message
 				)
 			);
 		}
@@ -47322,7 +47332,8 @@ Game.defaultProps = {
 			data: [],
 			lines: 0
 		},
-		score: 0
+		score: 0,
+		nick: ''
 	},
 	gameId: null,
 	isOver: false,
@@ -47375,7 +47386,7 @@ exports = module.exports = __webpack_require__(75)(false);
 
 
 // module
-exports.push([module.i, ".game-wrapper {\n  background: #f9f9f9;\n  display: inline-block;\n  margin: auto;\n  text-align: center;\n  padding: 50px;\n  border: 3px solid #595f68;\n  margin-top: 150px; }\n  .game-wrapper .tetris-wrapper {\n    display: inline-block;\n    position: relative;\n    width: 250px;\n    height: 500px; }\n    .game-wrapper .tetris-wrapper.adversary {\n      margin-left: 100px;\n      opacity: 0.5; }\n  .game-wrapper .blockrain-score-holder {\n    position: absolute;\n    color: white;\n    z-index: 15; }\n", ""]);
+exports.push([module.i, ".game-wrapper .tetris-wrapper {\n  position: relative;\n  width: 300px;\n  height: 600px;\n  float: left; }\n  .game-wrapper .tetris-wrapper .nick {\n    font-size: 18px;\n    text-transform: uppercase;\n    color: #3b414a;\n    margin-bottom: 15px; }\n  .game-wrapper .tetris-wrapper.adversary {\n    margin-left: 100px;\n    opacity: 0.5; }\n  .game-wrapper .tetris-wrapper .tetrify-wrapper {\n    position: relative; }\n  .game-wrapper .tetris-wrapper .end-game {\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: #006f76;\n    z-index: 20; }\n    .game-wrapper .tetris-wrapper .end-game p {\n      font-size: 22px;\n      position: absolute;\n      color: white;\n      left: 50%;\n      top: 50%;\n      -webkit-transform: translate(-50%, -50%);\n      transform: translate(-50%, -50%); }\n\n.game-wrapper .blockrain-score-holder {\n  position: absolute;\n  color: white;\n  z-index: 15; }\n", ""]);
 
 // exports
 
@@ -53580,28 +53591,33 @@ var Queue = function (_PureComponent) {
 
 		var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
 
-		_this.changeName = function (event) {
+		_this.changeNick = function (event) {
 			_this.setState({
-				name: event.target.value
+				nick: event.target.value
 			});
 		};
 
 		_this.enterQueue = function () {
-			socket.emit('enterQueue');
+			socket.emit('enterQueue', _this.state.nick);
 
 			_this.setState({
 				onQueue: true
-			});
+			}, setInterval(function () {
+				_this.setState({
+					secondsOnQueue: _this.state.secondsOnQueue + 1
+				});
+			}, 1000));
 		};
 
 		_this.state = {
-			name: 'something',
-			onQueue: false
+			nick: _this.props.nick,
+			onQueue: false,
+			secondsOnQueue: 0
 		};
 		return _this;
 	}
 
-	// Controla valor do input "name"
+	// Controla valor do input "nick"
 
 
 	// Entra na fila para jogar
@@ -53611,24 +53627,62 @@ var Queue = function (_PureComponent) {
 		key: 'render',
 		value: function render() {
 			var _state = this.state,
-			    name = _state.name,
-			    onQueue = _state.onQueue;
+			    nick = _state.nick,
+			    onQueue = _state.onQueue,
+			    secondsOnQueue = _state.secondsOnQueue;
 
 
 			return _react2.default.createElement(
 				'div',
-				null,
+				{ className: 'queue-wrapper' },
 				_react2.default.createElement(
 					'h1',
 					{ className: 'title' },
-					'Tetris'
+					_react2.default.createElement(
+						'span',
+						null,
+						'T'
+					),
+					_react2.default.createElement(
+						'span',
+						null,
+						'E'
+					),
+					_react2.default.createElement(
+						'span',
+						null,
+						'T'
+					),
+					_react2.default.createElement(
+						'span',
+						null,
+						'R'
+					),
+					_react2.default.createElement(
+						'span',
+						null,
+						'I'
+					),
+					_react2.default.createElement(
+						'span',
+						null,
+						'S'
+					)
 				),
-				_react2.default.createElement('input', { placeholder: 'Nome', id: 'name', type: 'text', onChange: this.changeName, value: name }),
+				_react2.default.createElement('input', { placeholder: 'Nome', id: 'nick', type: 'text', onChange: this.changeNick, value: nick }),
 				_react2.default.createElement(
 					'button',
 					{ disabled: onQueue, onClick: this.enterQueue },
-					'Entrar na fila!'
-				)
+					'Entrar'
+				),
+				onQueue ? _react2.default.createElement(
+					'p',
+					null,
+					'Esperando na fila a ',
+					secondsOnQueue,
+					' segundo',
+					secondsOnQueue != 0 ? 's' : ''
+				) : null
 			);
 		}
 	}]);
@@ -53683,7 +53737,7 @@ exports = module.exports = __webpack_require__(75)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".queue-wrapper input {\n  width: 350px;\n  height: 45px;\n  font-size: 22px;\n  line-height: 45px;\n  margin: auto;\n  display: block;\n  text-align: center;\n  margin-top: 80px; }\n\n.queue-wrapper .title {\n  font-family: 'Press Start 2P', cursive;\n  font-size: 48px;\n  text-transform: uppercase;\n  margin-top: 80px; }\n  .queue-wrapper .title span:nth-child(1) {\n    color: #E32D11; }\n  .queue-wrapper .title span:nth-child(2) {\n    color: #AC29E2; }\n  .queue-wrapper .title span:nth-child(3) {\n    color: #E5EE30; }\n  .queue-wrapper .title span:nth-child(4) {\n    color: #1AE523; }\n  .queue-wrapper .title span:nth-child(5) {\n    color: #1013D1; }\n  .queue-wrapper .title span:nth-child(6) {\n    color: #E32D11; }\n\n.queue-wrapper button {\n  width: 150px;\n  height: 30px;\n  margin-top: 30px;\n  text-transform: uppercase; }\n  .queue-wrapper button + p {\n    margin-top: 15px; }\n", ""]);
 
 // exports
 
@@ -53781,7 +53835,7 @@ exports = module.exports = __webpack_require__(75)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Press+Start+2P|Roboto);", ""]);
 
 // module
-exports.push([module.i, "body {\n  font-family: 'Roboto', sans-serif;\n  text-align: center; }\n", ""]);
+exports.push([module.i, "body {\n  font-family: 'Roboto', sans-serif;\n  text-align: center;\n  background-color: #3b414a; }\n  body .app {\n    width: 700px;\n    height: 700px;\n    background: #f9f9f9;\n    display: inline-block;\n    margin: auto;\n    text-align: center;\n    padding: 50px;\n    border: 3px solid #595f68;\n    margin-top: 80px; }\n", ""]);
 
 // exports
 

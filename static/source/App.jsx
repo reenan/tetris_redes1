@@ -19,10 +19,12 @@ export default class App extends Component {
 						lines: 0
 					},
 					score: 0,
+					nick: ''
 				},
 				gameId: null,
 				isOver: false,
-				isWinner: false
+				isWinner: false,
+				nick: ''
 			}
 		}
 	}
@@ -45,6 +47,8 @@ export default class App extends Component {
 		let game = this.removeReference(originalGame)
 
 		game.gameId = data.gameId
+		game.adversary.nick = data.adversaryNick
+		game.nick = data.nick
 
 		this.setState({game})
 		history.push('/game')
@@ -61,6 +65,7 @@ export default class App extends Component {
 					lines: 0
 				},
 				score: 0,
+				nick: ''
 			},
 			gameId: null,
 			isOver: false,
@@ -108,7 +113,7 @@ export default class App extends Component {
 	}
 
 	render() {
-		const { queue, game } = this.state
+		const { game } = this.state
 
 		return (
 			<div className='app'>
@@ -119,7 +124,7 @@ export default class App extends Component {
 					)} />
 					
 					<Route path='/' render={(props) => (
-  						<Queue {...props} {...queue} />
+  						<Queue {...props} nick={game.nick} />
 					)} />
 
 				</Switch>

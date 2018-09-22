@@ -14,7 +14,8 @@ export default class Game extends PureComponent {
 				data: [],
 				lines: 0
 			},
-			score: 0
+			score: 0,
+			nick: ''
 		},
 		gameId: null,
 		isOver: false,
@@ -57,16 +58,6 @@ export default class Game extends PureComponent {
 		if (nextIsOver) {
 			BlockRain(this.tetris).tetrify('pause');
 			BlockRain(this.tetrisAdversary).tetrify('pause');
-	
-			if (nextIsWinner) {
-				this.setState({
-					message: "VOCÊ GANHOU!"
-				})
-			} else {
-				this.setState({
-					message: "VOCÊ PERDEU!"
-				})
-			}
 		}
 	}
 
@@ -112,18 +103,30 @@ export default class Game extends PureComponent {
 
 	render() {
 		const { message } = this.state
-		const { adversary, gameId } = this.props
+		const { adversary, gameId, isOver, isWinner, nick } = this.props
 
 		return (
 			<div key={gameId} className='game-wrapper'>
 				<div className='tetris-wrapper'>
-					<div ref='tetris'>
+					<p className='nick'>{nick}</p>
+					
+					<div className='tetrify-wrapper' ref='tetris'>
 						<div className='tetris' />
+					
+						{
+							isOver ?
+								<div onClick={this.leaveGame} className='end-game'>
+									<p>{isWinner ? 'Parabéns, você ganhou' : 'Você perdeu'}</p>
+								</div> : null
+						}
 					</div>
+
 				</div>
 
 				<div className='tetris-wrapper adversary'>
-					<div ref='tetrisAdversary'>
+					<p className='nick adversary'>{adversary.nick}</p>
+					
+					<div className='tetrify-wrapper' ref='tetrisAdversary'>
 						<div className='blockrain-score-holder'>
 							<div className='blockrain-score'>
 								<div className='blockrain-score-msg'>Score</div>
@@ -133,8 +136,6 @@ export default class Game extends PureComponent {
 						<div className='tetris-adversary' />
 					</div>
 				</div>
-
-				<p onClick={this.leaveGame} className='message'>{message}</p>
 			</div>
 		);
 	}

@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
     
     // Quando um cliente solicita entrada na fila
     socket.on('enterQueue', (nick) => {
-        socket.nick = nick || 'anônimo'
+        socket.nick = nick ? (nick.length < 18 ? nick : nick.substring(0, 18)) : 'anônimo'
 
         if (queue.indexOf(socket) == -1) {
             console.log('adicionando ', socket.id, ' na fila')

@@ -8,36 +8,52 @@ export default class Queue extends PureComponent {
 		super(props);
 
 		this.state = {
-			name: 'something',
-			onQueue: false
+			nick: this.props.nick,
+			onQueue: false,
+			secondsOnQueue: 0
 		}
 	}
 
-	// Controla valor do input "name"
-	changeName = (event) => {
+	// Controla valor do input "nick"
+	changeNick = (event) => {
 		this.setState({
-			name: event.target.value
+			nick: event.target.value
 		})
 	}
 
 	// Entra na fila para jogar
 	enterQueue = () => {
-		socket.emit('enterQueue')
+		socket.emit('enterQueue', this.state.nick)
 
 		this.setState({
 			onQueue: true
-		})
+		}, setInterval(() => {
+			this.setState({
+				secondsOnQueue: this.state.secondsOnQueue + 1 
+			})
+		}, 1000))
 	}
 
 	render() {
-		const { name, onQueue } = this.state
+		const { nick, onQueue, secondsOnQueue } = this.state
 
-		return (			
-			<div>
-				<h1 className='title'>Tetris</h1>
+		return (
+			<div className='queue-wrapper'>
+				<h1 className='title'>
+					<span>T</span>
+					<span>E</span>
+					<span>T</span>
+					<span>R</span>
+					<span>I</span>
+					<span>S</span>
+				</h1>
 
-				<input placeholder='Nome' id='name' type='text' onChange={this.changeName} value={name} />
-				<button disabled={onQueue} onClick={this.enterQueue}>Entrar na fila!</button>
+				<input placeholder='Nome' id='nick' type='text' onChange={this.changeNick} value={nick} />
+				<button disabled={onQueue} onClick={this.enterQueue}>Entrar</button>
+				{
+					onQueue ?
+						<p>Esperando na fila a {secondsOnQueue} segundo{secondsOnQueue != 0 ? 's' : ''}</p> : null
+				}
 			</div>
 		);
 	}

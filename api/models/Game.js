@@ -37,7 +37,7 @@ class Game {
     setupListeners() {
         for (let player of this.players) {
 
-            player.emit('startGame', { adversary: player.adversary.nick, gameId: this.id })
+            player.emit('startGame', { nick: player.nick, adversaryNick: player.adversary.nick, gameId: this.id })
             player.isPlaying = true
             player.game = this
 
