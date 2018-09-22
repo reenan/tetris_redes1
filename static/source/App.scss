@@ -1,0 +1,10 @@
+@import './_mixins.scss';
+@import './_variables.scss';
+//@import './fonts/icons/scss/font-awesome.scss';
+
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P|Roboto');
+
+body {
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+}

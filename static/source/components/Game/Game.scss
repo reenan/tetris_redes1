@@ -1,0 +1,31 @@
+@import "source/_mixins.scss";
+@import "source/_variables.scss";
+
+
+.game-wrapper {
+	background: $soft-gray;
+	display: inline-block;
+	margin: auto;
+	text-align: center;
+	padding: 50px;
+	border: 3px solid $dark-blue-6;
+	margin-top: 150px;
+
+	.tetris-wrapper {
+		display: inline-block;
+		position: relative;
+		width: 250px;
+		height: 500px;
+
+		&.adversary {
+			margin-left: 100px;
+			opacity: 0.5;
+		}
+	}
+
+	.blockrain-score-holder {
+		position: absolute;
+		color: white;
+		z-index: 15;
+	}
+}
