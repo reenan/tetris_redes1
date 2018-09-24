@@ -1,0 +1,129 @@
+
+@mixin absolute-fill() {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+@mixin transition($args...) {
+	-webkit-transition: $args;
+	-moz-transition: $args;
+	-o-transition: $args;
+	transition: $args;
+}
+
+@mixin box-shadow($size, $color) {
+	-moz-box-shadow: $size $color;
+	-webkit-box-shadow: $size $color;
+	box-shadow: $size $color;
+}
+
+@mixin text-overflow($type) {
+	white-space: nowrap;
+	text-overflow: $type;
+	-o-text-overflow: $type;
+	-ms-text-overflow: $type;
+	overflow: hidden;
+}
+
+@mixin transform($transform) {
+	-webkit-transform: $transform;
+	-ms-transform: $transform;
+	transform: $transform;
+}
+
+@mixin aspect-ratio($width, $height) {
+	position: relative;
+
+	&:before {
+		display: block;
+		content: "";
+		width: 100%;
+		padding-top: ($height / $width) * 100%;
+	}
+
+	> div {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+}
+
+@mixin focal-point-x($x) {
+	background-position-x: percentage($x);
+}
+
+@mixin focal-point-y($y) {
+	background-position-y: percentage($y);
+}
+
+@mixin keyframes($name) {
+	@-webkit-keyframes #{$name} {
+		@content;
+	}
+	@-moz-keyframes #{$name} {
+		@content;
+	}
+	@-ms-keyframes #{$name} {
+		@content;
+	}
+	@keyframes #{$name} {
+		@content;
+	}
+}
+
+@mixin animation($content) {
+	-webkit-animation: $content;
+    -moz-animation: $content;
+    animation: $content;
+}
+
+@mixin clearfix() {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+}
+
+@mixin box-sizing($value) {
+	-webkit-box-sizing: $value;
+	-moz-box-sizing: $value;
+	box-sizing: $value;
+}
+
+@mixin vertical-align($value) {
+  display: inline-block;
+  vertical-align: $value
+}
+
+@mixin linear-gradient($args...) {
+	background: -moz-linear-gradient($args);
+	background: -webkit-linear-gradient($args);
+	background: linear-gradient($args);
+}
+
+@mixin backgroundGradient($position, $colorStart, $colorEnd) {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($colorStart), to($colorEnd));
+    background: -webkit-linear-gradient($position, $colorStart, $colorEnd);
+    background: -moz-linear-gradient($position, $colorStart, $colorEnd);
+    background: -ms-linear-gradient($position, $colorStart, $colorEnd);
+    background: -o-linear-gradient($position, $colorStart, $colorEnd);
+    background: linear-gradient($position, $colorStart, $colorEnd);
+}
+
+@mixin line-clamp($numLines: 1, $lineHeight: 1.7) {
+	overflow: hidden;
+	text-overflow: -o-ellipsis-lastline;
+	text-overflow: ellipsis;
+	display: block;
+	display: -webkit-box;
+	-webkit-line-clamp: $numLines;
+	-webkit-box-orient: vertical;
+	max-height: $numLines * $lineHeight + unquote('em');
+}

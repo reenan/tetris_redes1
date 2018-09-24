@@ -1,0 +1,59 @@
+@import "source/_mixins.scss";
+@import "source/_variables.scss";
+
+
+.queue-wrapper {
+    input {
+		width: 350px;
+		height: 45px;
+		font-size: 22px;
+		line-height: 45px;
+		margin: auto;
+        display: block;
+        text-align: center;
+        margin-top: 80px;
+    }
+    
+    .title {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 48px;
+        text-transform: uppercase;
+        margin-top: 80px;
+
+        span:nth-child(1) {
+            color: #E32D11;
+        }
+
+        span:nth-child(2) {
+            color: #AC29E2;
+        }
+
+        span:nth-child(3) {
+            color: #E5EE30;
+        }
+
+        span:nth-child(4) {
+            color: #1AE523;
+        }
+
+        span:nth-child(5) {
+            color: #1013D1;
+        }
+
+        span:nth-child(6) {
+            color: #E32D11;
+        }
+
+    }
+
+    button {
+        width: 150px;
+        height: 30px;
+        margin-top: 30px;
+        text-transform: uppercase;
+
+        + p {
+            margin-top: 15px;
+        }
+    }
+}
