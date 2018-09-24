@@ -1,5 +1,3 @@
-//const playerRouter = require('./routes/playerRouter')
-
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -13,8 +11,6 @@ const Game = require('./models/Game')
 app.use(express.static('../client'));
 app.use(cors())
 app.use(bodyParser.json())
-
-//app.use('/player', playerRouter)
 
 // Fila para jogos
 let queue = []
