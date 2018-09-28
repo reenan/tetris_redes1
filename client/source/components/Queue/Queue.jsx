@@ -50,6 +50,18 @@ export default class Queue extends PureComponent {
 		const { nick, onQueue, secondsOnQueue } = this.state
 		const { queue, gameList } = this.props
 
+		let gameListElement = gameList.reduce((elementList, game) => {
+			elementList.push(
+				<li key={game.id}>
+					<span className='player-nick'>{game.player1}</span>
+					<span className='vs'>vs</span>
+					<span className='player-nick'>{game.player2}</span>
+				</li>
+			)
+
+			return elementList
+		}, [])
+
 		return (
 			<div className='queue-wrapper'>
 				<h1 className='title'>
@@ -77,10 +89,13 @@ export default class Queue extends PureComponent {
 					}
 				</div>
 
-				{
-					gameList.length > 0 ?
-						<p>Jogos: {JSON.stringify(gameList)}</p> : null
-				}
+				<div className='game-list'>
+					Quem está jogando agora?
+					{
+						gameList.length > 0 ?
+							<ul>{gameListElement}</ul> : <p>No momento ninguém está jogando</p>
+					}
+				</div>
 			</div>
 		);
 	}
