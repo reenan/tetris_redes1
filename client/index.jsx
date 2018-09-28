@@ -10,9 +10,6 @@ import App from 'source/App.jsx'
 import 'source/App.scss'
 
 window.socket = io.connect('localhost:8080', { reconnect: true })
-//window.socket = new TetrisClient(io.connect('localhost:8080', { reconnect: true }))
-
-
 
 class Wrapper extends Component {
 	constructor(props) {

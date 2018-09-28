@@ -43,7 +43,6 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         
         // Remove cliente da fila, se estiver la
-        console.log('removendo ', socket.id, ' da fila')
         queue = queue.filter(client => client.id != socket.id)
 
         // Se estiver jogando, finaliza o jogo
@@ -54,18 +53,53 @@ io.on('connection', (socket) => {
             queue.push(socket.adversary)
 
             checkQueue()
+            updateGameList(socket)
         }
+    })
+
+    // Quando cliente montar os componentes ele vai avisar o servidor que vai responder com as listas
+    socket.on('appMounted', () => {
+        socket.emit('updateQueue', getNickList())
+        socket.emit('updateGameList', games)
+    })
+
+    // Quando sair do jogo, atualiza a lista de jogos
+    socket.on('leaveGame', () => {
+        updateGameList(socket)
     })
 })
 
 // Checa a fila para verificar se existe algum jogo a ser iniciado
 function checkQueue() {
-
     // Se a quantidade de clientes na fila é par, começa um jogo para os dois primeiros
     if (queue.length != 0 && queue.length % 2 == 0) {
         let game = new Game(queue.shift(), queue.shift())
-        games.push(game)
-        
+        games.push({
+            id: game.id,
+            player1: game.player1.nick,
+            player2: game.player2.nick
+        })
+
         game.start()
+
+        io.emit('updateGameList', games)
     }
+
+    io.sockets.emit('updateQueue', getNickList())
+}
+
+function updateGameList(socket) {
+    if (socket.game != null) {
+        games = games.filter(game => game.id != socket.game.id)
+        socket.game = null
+    }
+    
+    io.emit('updateGameList', games)
+}
+
+function getNickList() {
+    return queue.reduce((nicks, currentSocket) => {
+        nicks.push(currentSocket.nick)
+        return nicks
+    }, [])
 }

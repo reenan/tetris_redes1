@@ -25,12 +25,15 @@ export default class App extends Component {
 				isOver: false,
 				isWinner: false,
 				nick: ''
-			}
+			},
+			queue: [],
+			gameList: []
 		}
 	}
 
 	componentDidMount() {
 		this.setupListeners()
+		socket.emit('appMounted')
 	}
 
 	setupListeners() {
@@ -39,6 +42,16 @@ export default class App extends Component {
 		socket.on('adversaryBlockPlaced', this.onAdversaryBlockPlaced)
 		socket.on('adversaryLine', this.onAdversaryLine)
 		socket.on('gameOver', this.onGameOverCallback)
+		socket.on('updateQueue', this.onUpdateQueue)
+		socket.on('updateGameList', this.onUpdateGameList)
+	}
+
+	onUpdateGameList = (gameList) => {
+		this.setState({gameList})
+	}
+
+	onUpdateQueue = (queue) => {
+		this.setState({queue})
 	}
 
 	onStartGame = (data) => {
@@ -113,7 +126,7 @@ export default class App extends Component {
 	}
 
 	render() {
-		const { game } = this.state
+		const { game, queue, gameList } = this.state
 
 		return (
 			<div className='app'>
@@ -124,7 +137,7 @@ export default class App extends Component {
 					)} />
 					
 					<Route path='/' render={(props) => (
-  						<Queue {...props} nick={game.nick} />
+  						<Queue {...props} queue={queue} gameList={gameList} nick={game.nick} />
 					)} />
 
 				</Switch>

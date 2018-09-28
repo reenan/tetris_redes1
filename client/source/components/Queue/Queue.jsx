@@ -3,6 +3,10 @@ import React, { PureComponent } from 'react'
 import './Queue.scss'
 
 export default class Queue extends PureComponent {
+	static defaultProps = {
+		queue: [],
+		gameList: []
+	}
 
 	constructor(props) {
 		super(props);
@@ -27,15 +31,24 @@ export default class Queue extends PureComponent {
 
 		this.setState({
 			onQueue: true
-		}, setInterval(() => {
-			this.setState({
-				secondsOnQueue: this.state.secondsOnQueue + 1 
-			})
-		}, 1000))
+		}, () => {
+			this.queueCounter = setInterval(() => {
+				this.setState({
+					secondsOnQueue: this.state.secondsOnQueue + 1 
+				})
+			}, 1000)
+		})
+	}
+
+	componentWillUnmount() {
+		if (this.queueCounter) {
+			clearInterval(this.queueCounter)
+		}
 	}
 
 	render() {
 		const { nick, onQueue, secondsOnQueue } = this.state
+		const { queue, gameList } = this.props
 
 		return (
 			<div className='queue-wrapper'>
@@ -53,6 +66,20 @@ export default class Queue extends PureComponent {
 				{
 					onQueue ?
 						<p>Esperando na fila a {secondsOnQueue} segundo{secondsOnQueue != 0 ? 's' : ''}</p> : null
+				}
+
+
+				<div className='queue-list'>
+					Quem está na fila agora?
+					{
+						queue.length > 0 ?
+							<p>{queue[0]}</p> : <p>No momento ninguém está na fila</p>
+					}
+				</div>
+
+				{
+					gameList.length > 0 ?
+						<p>Jogos: {JSON.stringify(gameList)}</p> : null
 				}
 			</div>
 		);
