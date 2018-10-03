@@ -52,7 +52,7 @@ export default class Queue extends PureComponent {
 
 		let gameListElement = gameList.reduce((elementList, game) => {
 			elementList.push(
-				<li key={game.id}>
+				<li key={elementList.length}>
 					<span className='player-nick'>{game.player1}</span>
 					<span className='vs'>vs</span>
 					<span className='player-nick'>{game.player2}</span>
@@ -88,6 +88,8 @@ export default class Queue extends PureComponent {
 							<p>{queue[0]}</p> : <p>No momento ninguém está na fila</p>
 					}
 				</div>
+
+				<hr />
 
 				<div className='game-list'>
 					Quem está jogando agora?
